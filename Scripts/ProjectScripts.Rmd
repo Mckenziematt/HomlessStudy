@@ -1,0 +1,82 @@
+---
+title: "Classwork march 26th"
+output: html_document
+---
+
+```{r}
+install.packages("NHANES")
+library(NHANES)
+install.packages("ggplot2")
+library(NHANES)
+install.packages("pastecs")
+library(pastecs)
+install.packages("clinfun")
+library(clinfun)
+install.packages("pgirmess")
+library(pgirmess)
+install.packages("gmodels")
+library(gmodels)
+install.packages("MASS")
+library(MASS)
+install.packages("car")
+library(car)
+install.packages("outliers")
+library(outliers)
+install.packages("Hmisc")
+library(Hmisc)
+install.packages("ggm")
+library(ggm)
+install.packages("epitools")
+library(epitools)
+install.packages("dplyr")
+library(dplyr)
+install.packages("mlogit")
+library(mlogit)
+```
+```{r}
+#race
+#Current employment
+#concern for safety
+#General feeling of health
+#did they need medical attention
+#How big of a problem is not getting medical attention cost of medical care, long wait times, not knowing where to go, now way to get there, finding food and shelter, fear of bad news, bad experiences, no female health providers, 
+#use of birth control in the past year
+#do you currently have a menstrual period
+#Where do you or where did you get menstrual products
+
+#Id like to know concern for safety based on race
+#What percent of each race
+#Current employment and their concern for safety
+#compare variables
+```
+```{r}
+HealthNeeds
+Homeless<-subset(HealthNeeds, select = c(ID, Age, Race, Education, Pregnant, NumberPregnancies, ConcernForSafety,
+                                         HealthPerception, MenstrualCycle, NeedToSeeProvider, CostCare, LongWait, 
+                                         NotKnowingWhereTogo, NoWayToGetAProvider, TooBusy, FearBadNews, BadExperiences))
+
+Homeless_coded$Education = as.numeric(factor(Homeless$Education, 
+                                             levels = c("High school/GED", "Technical/ trade school or community college",
+                                                        "Undergraduate university degree (Bachelor’s)")))
+
+```
+```{r}
+#First set of code editing is women over the age of 45 as old and women younger young
+#get rid of NAs
+#change education to two variable as some college or no college
+Homeless$AgeCat<-ifelse(Homeless$Age<=50,c(0), c(1))
+Homeless
+Homeless$AgeCat<-factor(Homeless$AgeCat,levels=c(0:1),labels = c("Young","Old"))
+Homeless
+#okay here I just made my AgeCat with old and young women
+```
+```{r}
+is.na(Homeless)
+HomelessClean<-na.omit(Homeless)
+HomelessClean
+```
+```{r}
+#Testing For Normality
+by(HomelessClean$AgeFirstMarij,CleanData5$HardDrugs,shapiro.test)
+```
+
