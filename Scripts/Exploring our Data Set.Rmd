@@ -1,0 +1,135 @@
+---
+title: "Classwork march 26th"
+output: html_document
+---
+
+```{r}
+install.packages("NHANES")
+library(NHANES)
+install.packages("ggplot2")
+library(NHANES)
+install.packages("pastecs")
+library(pastecs)
+install.packages("clinfun")
+library(clinfun)
+install.packages("pgirmess")
+library(pgirmess)
+install.packages("gmodels")
+library(gmodels)
+install.packages("MASS")
+library(MASS)
+install.packages("car")
+library(car)
+install.packages("outliers")
+library(outliers)
+install.packages("Hmisc")
+library(Hmisc)
+install.packages("ggm")
+library(ggm)
+install.packages("epitools")
+library(epitools)
+install.packages("dplyr")
+library(dplyr)
+install.packages("mlogit")
+library(mlogit)
+install.packages("psych")
+library(psych)
+
+```
+
+```{r}
+#Subsetting variables from my Health Needs Data set
+#you will need to load this file into your global environment. 
+HealthNeeds
+Homeless<-subset(HealthNeeds, select = c(ID, Age, Race, Education, Pregnant, NumberPregnancies, ConcernForSafety,
+                                         HealthPerception, MenstrualCycle))
+Homeless
+```
+
+```{r}
+
+Homeless$CollegeCat<-ifelse(Homeless$Education=="Technical/ trade school or community college",c(0),ifelse(Homeless$Education=="Undergraduate university degree (Bachelor’s)",c(0),c(1)))
+
+Homeless$CollegeCat<-factor(Homeless$CollegeCat,levels = c(0:1),labels=c("College Yes","College No"))
+
+summary(Homeless)
+summary(Homeless$CollegeCat)
+
+#So here I told R to separate my groups into College yes and college No. The output shows that 11 of the women surveyed indeed attended some type of additional schooling follwing their highshool career
+# and 41 of those ladies reported no
+```
+
+```{r}
+#Here I am getting rid of my NAs and anyone that has not answered in my data set 
+#This will leave me with a fairly decent sample size
+is.na(Homeless)
+#THis function out puts False if you do not have any missing data and TRUE if you do, so look for TRUE and then follow with this code to get rid of the missing data
+HomelessClean<-na.omit(Homeless)
+HomelessClean
+#I made a new data set called HomelesClean and im taking out all of the participants that left NA for any of their survey questions
+
+```
+
+
+```{r}
+install.packages("pastecs")
+library(pastecs)
+by(data=HomelessClean$Age,INDICES = HomelessClean$MenstrualCycle,FUN=stat.desc)
+#This will tell you certain descriptive statistics for women 
+#Here Im looking at Age (numeric), with whether or not women are menstrating
+#You have median, mean, Standard Dev, Confidence interval, variation, and your range of values
+
+```
+```{r}
+#Of course this is a more technical way of getting those same descriptive stats
+mean(HomelessClean$NumberPregnancies)
+median(HomelessClean$NumberPregnancies)
+var(HomelessClean$NumberPregnancies)
+sd(HomelessClean$NumberPregnancies)
+```
+
+
+```{r}
+#Fishers Exact Test: used to compare the proportin of older/younger homeless women in relation to their menstrual status
+#we use this for smaller sample sizes
+
+#So I first want to see the association between two variables: Age(Numerical) and Menstrual Cycle(Categorical)
+
+#Here Im making a new category for age called AgeCat
+HomelessClean$AgeCat<-ifelse(HomelessClean$Age<=50,c(0), c(1))
+HomelessClean$AgeCat<-factor(HomelessClean$AgeCat,levels=c(0:1),labels = c("Young","Old"))
+HomelessClean
+```
+```{r}
+#FISHERS EXACT TEST
+install.packages("gmodels")
+library(gmodels)
+#Then Im running my fishers exact test to see the association between young and old women
+#output: exposure is lower among cases than controls
+#The odds of being young is lower among those that have stopped menstrating compared to those that are over the age of 50
+CrossTable(HomelessClean$AgeCat, HomelessClean$MenstrualCycle, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
+```
+
+```{R}
+boxplot(HomelessClean$NumberPregnancies)
+boxplot(HomelessClean$Age)
+
+```
+
+
+
+
+```{R}
+
+install.packages("pastecs")
+library(pastecs)
+by(HomelessClean$NumberPregnancies, HomelessClean$MenstrualCycle, stat.desc, basic=FALSE, norm=TRUE)
+#Another way to check for normality
+leveneTest(HomelessClean$NumberPregnancies, HomelessClean$MenstrualCycle)
+
+```
+
+
+
+
+

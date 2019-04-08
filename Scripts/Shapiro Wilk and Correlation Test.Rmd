@@ -1,0 +1,88 @@
+---
+title: "Shapiro Wilk And Correlation"
+output: html_document
+---
+
+#Recoding Variables
+```{R}
+HomelessClean<-na.omit(Homeless)
+HomelessClean
+```
+
+```{r}
+#So now I have characterized Concern for Safety as a numeric variable. This will allow me to run correlation test and other univariate and multivariate stats
+HomelessClean$ConcernForSafety <- as.numeric(factor(HomelessClean$ConcernForSafety,
+                                                  levels = c('Never', 'Rarely', 'Sometimes', 'Always')))
+
+
+```
+
+
+```{r}
+#WE want to change our education variable to numeric as well
+HomelessClean$Education <- as.numeric(factor(HomelessClean$Education,
+                                             levels = c('High school/GED', 'Technical/ trade school or community college', 'Undergraduate university degree (Bachelor’s)')))
+```
+
+```{r}
+HomelessClean$HealthPerception <- as.numeric(factor(HomelessClean$HealthPerception,
+                                             levels = c('Poor', 'Fair', 'Good', 'Very good', 'Excellent')))
+```
+
+```{r}
+HomelessClean$Race <- as.numeric(factor(HomelessClean$Race,
+                                        levels = c('White', 'Black or African American', 'Hispanic or Latino', 'American Indian', 'Hebrew Israelite')))
+```
+
+#SHAPIRO WILK TEST: tells us if data is normally distributed
+```{r}
+shapiro.test(HomelessClean$NumberPregnancies)
+#pvalue is less than .05 so data is normally distributed
+#Bivariate
+
+by(HomelessClean$NumberPregnancies,HomelessClean$MenstrualCycle,shapiro.test)
+#Data is not normaly distributed between Menstrual cycle and number of pregnancies
+
+shapiro.test(HomelessClean$ConcernForSafety)
+#This is normally distributed bc p is less than .05
+by(HomelessClean$ConcernForSafety, HomelessClean$MenstrualCycle,shapiro.test)
+#This tells us that concern for safety is normally distributed for Women that are menstrating and those that are not
+by(HomelessClean$Race, HomelessClean$MenstrualCycle,shapiro.test)
+#race is normally distributed among women who are menstrating and not menstrating
+```
+
+#Correlation Test
+```{r}
+
+#Now I wanna see the Correlation between certain variables: this gives us an understanding on how much variables are related
+#Were gonna use a Kendalls tau (nonparametric correlation) because our sample size is relatively small
+#Pvalue less than .05 then they are correlated
+#You dont have to run all of these but just try a few (numeric) variables and see what you get
+
+cor.test(HomelessClean$Age,HomelessClean$ConcernForSafety,alternative="two.sided", method = "kendall", conf.level = 0.95)
+
+
+cor.test(HomelessClean$NumberPregnancies,HomelessClean$ConcernForSafety,alternative="two.sided", method = "kendall", conf.level = 0.95)
+
+
+cor.test(HomelessClean$Age,HomelessClean$ConcernForSafety,alternative="two.sided", method = "kendall", conf.level = 0.95)
+
+cor.test(HomelessClean$Age,HomelessClean$NumberPregnancies,alternative="two.sided", method = "kendall", conf.level = 0.95)
+
+cor.test(HomelessClean$Education,HomelessClean$NumberPregnancies,alternative="two.sided", method = "kendall", conf.level = 0.95)
+
+cor.test(HomelessClean$NumberPregnancies,HomelessClean$HealthPerception,alternative="two.sided", method = "kendall", conf.level = 0.95)
+
+```
+
+#Correlation Matrix
+```{R}
+
+#Shows us the correlation among all variables at once
+cor(HomelessClean[,c('Age','ConcernForSafety','Education','NumberPregnancies','HealthPerception')],method = "kendall")
+
+#This  makes it easier for us to find correlation between certain variables
+#Health Perception and Education seem to be correlated as well as Concern for Safety and Health PErception 
+```
+
+```
