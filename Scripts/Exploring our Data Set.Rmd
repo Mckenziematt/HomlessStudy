@@ -109,6 +109,11 @@ library(gmodels)
 #The odds of being young is lower among those that have stopped menstrating compared to those that are over the age of 50
 CrossTable(HomelessClean$AgeCat, HomelessClean$MenstrualCycle, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
 ```
+```{R}
+library(gmodels)
+#So we dont see a difference in age category and having gone to college but we do see that majority of women did not go to college
+CrossTable(HomelessClean$AgeCat, HomelessClean$CollegeCat, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
+```
 
 ```{R}
 boxplot(HomelessClean$NumberPregnancies)
@@ -119,15 +124,7 @@ boxplot(HomelessClean$Age)
 
 
 
-```{R}
 
-install.packages("pastecs")
-library(pastecs)
-by(HomelessClean$NumberPregnancies, HomelessClean$MenstrualCycle, stat.desc, basic=FALSE, norm=TRUE)
-#Another way to check for normality
-leveneTest(HomelessClean$NumberPregnancies, HomelessClean$MenstrualCycle)
-
-```
 
 
 
