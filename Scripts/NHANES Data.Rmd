@@ -1,0 +1,66 @@
+```{r}
+install.packages("NHANES")
+library(NHANES)
+```
+```{r}
+
+NHANESVAR<-subset(NHANES, select = c(ID, Age, Race1, Education, nPregnancies,
+                                         HealthGen, Gender))
+NHANESVAR
+```
+```{r}
+RelatedVariables<-na.omit(NHANESVAR)
+RelatedVariables
+#getting rid of my missing data
+#And making a new data set called related variables that excludes participants with missing data
+```
+```{R}
+RelatedVariables$HealthGen <- as.numeric(factor(RelatedVariables$HealthGen,
+                                             levels = c('Poor', 'Fair', 'Good','Vgood', 'Excellent')))
+```
+
+```{R}
+RelatedVariables
+```
+```{r}
+#so here were gonna make an age category for young and old women just like we did in the homeless women data set
+RelatedVariables$AgeCat<-ifelse(RelatedVariables$Age<=50,c(0), c(1))
+RelatedVariables$AgeCat<-factor(RelatedVariables$AgeCat,levels=c(0:1),labels = c("Young","Old"))
+RelatedVariables
+
+#Im turning educaiton into a categorical variable and makings a new column in the related variables data set
+RelatedVariables$CollegeCat<-ifelse(RelatedVariables$Education=="Some College",c(0),ifelse(RelatedVariables$Education=="College Grad",c(0),c(1)))
+
+RelatedVariables$CollegeCat<-factor(RelatedVariables$CollegeCat,levels = c(0:1),labels=c("College Yes","College No"))
+
+summary(RelatedVariables)
+summary(RelatedVariables$CollegeCat)
+
+CrossTable(RelatedVariables$AgeCat, RelatedVariables$CollegeCat, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
+
+#So when you run this chunk above. Make sure to look into the console and interpret it from there
+# When using an R markdown it wont show you the whole table
+#This table shows that there is a difference in women 
+
+# I know this is difficult to interpret but when looking at the table we can infer that most of our young women had gone to college or had some form of college (62%) 
+#Meanwhile (37%) did not
+#If we relate this too our homeless women study we can infer that they obviously have educational disparities compared to the larger population
+```
+
+```{r}
+RelatedVariables$Education <- as.numeric(factor(RelatedVariables$Education,
+                                             levels = c('8th Grade', '9 - 11th Grade', 'High School','Some College', 'College Grad')))
+#giving our education levels so that we can run numerical stats
+mean(RelatedVariables$Education)
+median(RelatedVariables$Education)
+var(RelatedVariables$Education)
+sd(RelatedVariables$Education)
+```
+```{r}
+mean(RelatedVariables$nPregnancies)
+median(RelatedVariables$nPregnancies)
+var(RelatedVariables$nPregnancies)
+sd(RelatedVariables$nPregnancies)
+#Similar number of pregnancies as our women in the Homeless data set
+```
+
