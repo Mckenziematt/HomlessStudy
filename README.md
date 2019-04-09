@@ -13,3 +13,4 @@ You will need to download my exel document of all the data collected on homeless
 Please follow structure of my scripts when completing this task:
 Step one: Exploring our Data Set
 Step two: Shapiro Wilk and Correlation Test
+Step three: NHANES Data
