@@ -18,7 +18,7 @@ HomelessClean$ConcernForSafety <- as.numeric(factor(HomelessClean$ConcernForSafe
 ```
 
 
-```{r}
+```e{r}
 #WE want to change our education variable to numeric as well
 HomelessClean$Education <- as.numeric(factor(HomelessClean$Education,
                                              levels = c('High school/GED', 'Technical/ trade school or community college', 'Undergraduate university degree (Bachelor’s)')))
@@ -79,7 +79,7 @@ cor.test(HomelessClean$NumberPregnancies,HomelessClean$HealthPerception,alternat
 ```{R}
 
 #Shows us the correlation among all variables at once
-cor(HomelessClean[,c('Age','ConcernForSafety','Education','NumberPregnancies','HealthPerception')],method = "kendall")
+cor(HomelessClean[,c('Age','ConcernForSafety','Education','NumberPregnancies','HealthPerception','Race')],method = "kendall")
 
 #This  makes it easier for us to find correlation between certain variables
 #Health Perception and Education seem to be correlated as well as Concern for Safety and Health PErception 

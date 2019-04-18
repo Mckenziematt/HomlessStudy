@@ -15,28 +15,46 @@ RelatedVariables
 #And making a new data set called related variables that excludes participants with missing data
 ```
 ```{R}
-RelatedVariables$HealthGen <- as.numeric(factor(RelatedVariables$HealthGen,
+install.packages("outliers")
+library(outliers)
+grubbs.test(RelatedVariables$nPregnancies)
+#So this function gets rid of any data that is definitely not accurate and was probably not entered correctly
+#When your pvalue comes out less than .05 that means you have outliers and you need to remove them
+```
+```{R}
+library(outliers)
+outlier_tf=outlier(RelatedVariables$nPregnancies,logical=TRUE)
+find_outlier=which(outlier_tf==TRUE,arr.ind=TRUE)
+RelatedVariables2=RelatedVariables[-find_outlier,]
+
+grubbs.test(RelatedVariables2$nPregnancies, type=10)
+#so this is a p value greater than .05 so that means our outliers are gone
+```
+
+```{R}
+RelatedVariables2$HealthGen <- as.numeric(factor(RelatedVariables2$HealthGen,
                                              levels = c('Poor', 'Fair', 'Good','Vgood', 'Excellent')))
 ```
 
 ```{R}
-RelatedVariables
+RelatedVariables2
 ```
 ```{r}
 #so here were gonna make an age category for young and old women just like we did in the homeless women data set
-RelatedVariables$AgeCat<-ifelse(RelatedVariables$Age<=50,c(0), c(1))
-RelatedVariables$AgeCat<-factor(RelatedVariables$AgeCat,levels=c(0:1),labels = c("Young","Old"))
-RelatedVariables
+RelatedVariables2$AgeCat<-ifelse(RelatedVariables2$Age<=50,c(0), c(1))
+RelatedVariables2$AgeCat<-factor(RelatedVariables2$AgeCat,levels=c(0:1),labels = c("Young","Old"))
+RelatedVariables2
 
 #Im turning educaiton into a categorical variable and makings a new column in the related variables data set
-RelatedVariables$CollegeCat<-ifelse(RelatedVariables$Education=="Some College",c(0),ifelse(RelatedVariables$Education=="College Grad",c(0),c(1)))
+RelatedVariables2$CollegeCat<-ifelse(RelatedVariables2$Education=="Some College",c(0),ifelse(RelatedVariables2$Education=="College Grad",c(0),c(1)))
 
-RelatedVariables$CollegeCat<-factor(RelatedVariables$CollegeCat,levels = c(0:1),labels=c("College Yes","College No"))
+RelatedVariables2$CollegeCat<-factor(RelatedVariables2$CollegeCat,levels = c(0:1),labels=c("College Yes","College No"))
 
-summary(RelatedVariables)
-summary(RelatedVariables$CollegeCat)
+summary(RelatedVariables2)
+summary(RelatedVariables2$CollegeCat)
 
-CrossTable(RelatedVariables$AgeCat, RelatedVariables$CollegeCat, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
+library(gmodels)
+CrossTable(RelatedVariables2$AgeCat, RelatedVariables2$CollegeCat, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
 
 #So when you run this chunk above. Make sure to look into the console and interpret it from there
 # When using an R markdown it wont show you the whole table
@@ -45,22 +63,41 @@ CrossTable(RelatedVariables$AgeCat, RelatedVariables$CollegeCat, fisher = TRUE, 
 # I know this is difficult to interpret but when looking at the table we can infer that most of our young women had gone to college or had some form of college (62%) 
 #Meanwhile (37%) did not
 #If we relate this too our homeless women study we can infer that they obviously have educational disparities compared to the larger population
+#Because our women here have fairly even numbers when it comes to young and older women who have attended college
 ```
 
 ```{r}
-RelatedVariables$Education <- as.numeric(factor(RelatedVariables$Education,
+RelatedVariables2$Education <- as.numeric(factor(RelatedVariables2$Education,
                                              levels = c('8th Grade', '9 - 11th Grade', 'High School','Some College', 'College Grad')))
 #giving our education levels so that we can run numerical stats
-mean(RelatedVariables$Education)
-median(RelatedVariables$Education)
-var(RelatedVariables$Education)
-sd(RelatedVariables$Education)
+mean(RelatedVariables2$Education)
+median(RelatedVariables2$Education)
+var(RelatedVariables2$Education)
+sd(RelatedVariables2$Education)
 ```
 ```{r}
-mean(RelatedVariables$nPregnancies)
-median(RelatedVariables$nPregnancies)
-var(RelatedVariables$nPregnancies)
-sd(RelatedVariables$nPregnancies)
+mean(RelatedVariables2$nPregnancies)
+median(RelatedVariables2$nPregnancies)
+var(RelatedVariables2$nPregnancies)
+sd(RelatedVariables2$nPregnancies)
 #Similar number of pregnancies as our women in the Homeless data set
 ```
+```{r}
+library(ggplot2)
+HistogramNHANES<-ggplot(RelatedVariables2,aes(nPregnancies))+geom_histogram(aes(y=..density..),colour="blue",fill="blue")+labs(x="Number of Pregnancies", y="Density")
 
+HistogramNHANES+stat_function(fun = dnorm,args=
+                                list(mean=mean(RelatedVariables2$nPregnancies,na.rm = TRUE),sd=sd(RelatedVariables2$nPregnancies,na.rm = TRUE)),colour="red",size=1)
+
+#This shows that majority of women reported around 3 preganncies
+#we also saw this from our univariate stats
+```
+```{r}
+HistogramNHANES2<-ggplot(RelatedVariables2,aes(Age))+geom_histogram(aes(y=..density..),colour="blue",fill="blue")+labs(x="Age", y="Density")
+
+HistogramNHANES2+stat_function(fun = dnorm,args=
+                                list(mean=mean(RelatedVariables2$Age,na.rm = TRUE),sd=sd(RelatedVariables2$Age,na.rm = TRUE)),colour="red",size=1)
+```
+```{r}
+boxplot(RelatedVariables2$Age)
+```

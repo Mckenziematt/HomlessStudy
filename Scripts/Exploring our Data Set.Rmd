@@ -102,16 +102,19 @@ HomelessClean
 ```
 ```{r}
 #FISHERS EXACT TEST
+#We run a nonparametric fishers exact test when our data set is small 
 install.packages("gmodels")
 library(gmodels)
 #Then Im running my fishers exact test to see the association between young and old women
 #output: exposure is lower among cases than controls
-#The odds of being young is lower among those that have stopped menstrating compared to those that are over the age of 50
+#The odds of not meanstrating is lower young women than older women
 CrossTable(HomelessClean$AgeCat, HomelessClean$MenstrualCycle, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
 ```
 ```{R}
+#Another fishers exact test for College and Age
 library(gmodels)
 #So we dont see a difference in age category and having gone to college but we do see that majority of women did not go to college
+#Therefore the proportion of of college is the same between age groups
 CrossTable(HomelessClean$AgeCat, HomelessClean$CollegeCat, fisher = TRUE, expected = TRUE, sresid = TRUE, format = "SAS")
 ```
 
@@ -120,9 +123,29 @@ boxplot(HomelessClean$NumberPregnancies)
 boxplot(HomelessClean$Age)
 
 ```
+```{R}
+HistogramHomeless<-ggplot(HomelessClean,aes(NumberPregnancies))+geom_histogram(aes(y=..density..),colour="blue",fill="blue")+labs(x="Number of Pregnancies", y="Density")
 
+HistogramHomeless+stat_function(fun = dnorm,args=
+                                list(mean=mean(HomelessClean$NumberPregnancies,na.rm = TRUE),sd=sd(HomelessClean$NumberPregnancies,na.rm = TRUE)),colour="red",size=1)
 
+#so when we compare this to our NAHANEs data histogram of number pregnancies we see that number of pregnancies varied greately where our NHANEs data showed that the average amount of preganncies was 3
+#When we ran our univariate stats it said that the mean number of pregnancies was arond 2 thats probably becuase we have some women that reported having none, maybe because they couldnt get pregnant or not financially stable enough to have one, and this was skewed with women who have had too many pregnancies because they maybe have not been able to access pretection
+```
 
+```{r}
+HistogramHomeless2<-ggplot(HomelessClean,aes(Age))+geom_histogram(aes(y=..density..),colour="blue",fill="blue")+labs(x="Age", y="Density")
+
+HistogramHomeless2+stat_function(fun = dnorm,args=
+                                list(mean=mean(HomelessClean$Age,na.rm = TRUE),sd=sd(HomelessClean$Age,na.rm = TRUE)),colour="red",size=1)
+#proves that majority of women lie in the older stages of life
+```
+```{r}
+HistogramHomeless2<-ggplot(HomelessClean,aes(HealthPerception))+geom_histogram(aes(y=..density..),colour="blue",fill="blue")+labs(x="Health Perception: Poor, Fair, Good, Very Good, Excellent", y="Density")
+
+HistogramHomeless2+stat_function(fun = dnorm,args=
+                                list(mean=mean(HomelessClean$HealthPerception,na.rm = TRUE),sd=sd(HomelessClean$HealthPerception,na.rm = TRUE)),colour="red",size=1)
+```
 
 
 
